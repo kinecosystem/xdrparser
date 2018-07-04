@@ -10,6 +10,6 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        xdrparser=xdrparser:main
+        xdrparser=cli:main
     '''
 )
