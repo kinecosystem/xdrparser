@@ -11,5 +11,6 @@ setup(
     entry_points='''
         [console_scripts]
         xdrparser=cli:main
-    '''
+    ''',
+    python_requires='>=3.4',
 )
