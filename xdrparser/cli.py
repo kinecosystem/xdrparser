@@ -4,7 +4,7 @@ import re
 
 import click
 
-import parser
+from xdrparser import parser
 
 
 @click.command()
