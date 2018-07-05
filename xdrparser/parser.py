@@ -52,9 +52,9 @@ def unpack_file(file_name):
     # Get the file type from the file name
     # 'path/to/ledger-00abc53f.xdr' > 'ledger'
     # or 'path\to\ledger-00abc53f.xdr' > 'ledger on a Windows os
-    file_type = file_name.split('-')[len(file_name.split('-')) - 2]
-    file_type = file_type.split('\\')[len(file_type.split('\\')) - 1]
-    file_type = file_type.split('/')[len(file_type.split('/')) - 1]
+    file_type = file_name.split('-')[-2]
+    file_type = file_type.split('\\')[-1]
+    file_type = file_type.split('/')[-1]
 
     # Init the unpacker and get the relevant method for unpacking
     unpacker, unpacker_methods = init_unpacker(data)
@@ -116,8 +116,8 @@ def todict(obj, current_path=''):
 def parse_value(value, path):
     """Parse a value to make it human-readable and json-compatible."""
     split_path = path.split('.')
-    final_key = split_path[len(split_path) - 1]
-    second_to_last_key = split_path[len(split_path) - 2]
+    final_key = split_path[-1]
+    second_to_last_key = split_path[-2]
     if isinstance(value, int):
         # Check if the value from this attribute should be parsed.
         if final_key == 'amount':
