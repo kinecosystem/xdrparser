@@ -44,7 +44,7 @@ def unpack_file(file_name):
     # xdr files are always gzipped in the archive, unzip it if the user didn't do it yet
     if file_name.endswith('.gz'):
         with gzip.open(file_name) as gzippedfile:
-            data = gzip.decompress(gzippedfile)
+            data = gzippedfile.read()
     else:
         with open(file_name, 'rb') as xdr_file:
             data = xdr_file.read()
