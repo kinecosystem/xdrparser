@@ -12,8 +12,9 @@ Command line tool to parse the .xdr files written to the history archive of a st
 1. Edit this when its up
 
 ### From the repository:
-1. Clone the repository
-2. Use ```pip install .```
+```
+pip install git+git://github.com/kinecosystem/xdrparser#egg=xdrparser  
+```
 
 ## Usage
 ```
