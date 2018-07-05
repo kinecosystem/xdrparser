@@ -4,7 +4,7 @@ Command line tool to parse the .xdr files written to the history archive of a st
 
 ## Compatibility
 * Python >= 3.4
-* Tested on Linux and Mac OS, should work on Windows as well.
+* Tested on Linux, Mac OS, and Windows.
 
 ## Installation
 
