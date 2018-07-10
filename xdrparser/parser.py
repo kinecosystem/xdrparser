@@ -62,20 +62,24 @@ def unpack_file(file_name):
 
     parsed_structs = []
 
-    # All files apart from SCP or Results should have 64 ledgers in them
-    for i in range(0, 64):
+    # Ledger files should always have 64 structures in them, apart from the very first one where its 63.
+    expected_ledgers = 63 if '0000003f' in file_name else 64
+    current_ledger = 0
+    while True:
         # Each structure in the XDR files is prefixed with the length of the structure,
         # there is no use for it for parsing the file
         try:
             _ = unpacker.unpack_uint32()
         except EOFError:
-            if file_type == 'scp' or file_type == 'results':
-                break
-            else:
-                print("ERROR: Found only {} ledgers in {}, expected 64".format(i, file_name))
+            if file_type == 'ledger' and current_ledger != expected_ledgers:
+                print("ERROR: Found only {} ledgers in {}, expected {}".format(current_ledger,
+                                                                               file_name, expected_ledgers))
                 quit(1)
+            else:
+                break
 
         parsed_structs.append(unpack_struct())
+        current_ledger += 1
 
     return parsed_structs
 
@@ -103,11 +107,11 @@ def todict(obj, current_path=''):
 
     In addition, to make it json-compatible, parse every final value.
     """
-    if hasattr(obj, "__dict__"):
+    if hasattr(obj, '__dict__'):
         data = dict([(key, todict(value, current_path + '.' + key))
                      for key, value in obj.__dict__.items()])
         return data
-    elif hasattr(obj, "__iter__") and not isinstance(obj, (str, bytes, bytearray)):
+    elif hasattr(obj, '__iter__') and not isinstance(obj, (str, bytes, bytearray)):
         return [todict(value, current_path + '.' + str(key)) for key, value in enumerate(obj)]
     else:
         return parse_value(obj, current_path)

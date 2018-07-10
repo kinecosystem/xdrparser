@@ -31,7 +31,8 @@ def verify_input(xdr_file, with_hash, network_id):
     file_name = xdr_file.split('\\')[-1]
     file_name = file_name.split('/')[-1]
 
-    if re.fullmatch('^(transactions|bucket|results|scp|ledger)(-[0-9a-fA-F]{8}.)(xdr|xdr.gz)$', file_name) is None:
+    if re.fullmatch('^(transactions|results|scp|ledger)(-[0-9a-fA-F]{8}.)(xdr|xdr.gz)$', file_name) is None \
+            and re.fullmatch('^(bucket-)([0-9a-fA-F]{64}.)(xdr|xdr.gz)$', file_name) is None:
         print('Invalid history archive file name')
         quit(1)
 
