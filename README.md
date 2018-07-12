@@ -9,7 +9,9 @@ Command line tool to parse the .xdr files written to the history archive of a st
 ## Installation
 
 ### From PyPI:
-1. Edit this when its up
+```
+pip install xdrparser
+```
 
 ### From the repository:
 ```
