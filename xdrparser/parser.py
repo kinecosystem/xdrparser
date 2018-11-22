@@ -4,8 +4,9 @@ import gzip
 from hashlib import sha256
 import base64
 
-from stellar_base.stellarxdr import Xdr
-from stellar_base import utils
+from kin_base.stellarxdr import Xdr
+from kin_base.stellarxdr import StellarXDR_const
+from kin_base import utils
 
 
 # This is needed in order to calculate transaction hash.
@@ -124,8 +125,10 @@ def parse_value(value, path):
     second_to_last_key = split_path[-2]
     if isinstance(value, int):
         # Check if the value from this attribute should be parsed.
-        if final_key == 'amount':
+        if final_key == 'amount' or final_key == 'startingBalance':
             return parse_amount(value)
+        if final_key == 'code':
+            return parse_result_code(second_to_last_key, value)
 
     elif isinstance(value, (bytes, bytearray)):
         if final_key == 'ed25519':
@@ -202,6 +205,26 @@ def parse_hint(value):
 def parse_amount(value):
     """Return a scaled down amount."""
     return value / AMOUNT_SCALE_FACTOR
+
+
+def parse_result_code(second_to_last_key, value):
+    """Parse a result code"""
+    # If its a transaction result
+    if second_to_last_key == 'result':
+        return StellarXDR_const.TransactionResultCode.get(value)
+
+    # If its an operation result code
+    try:
+        # Check if the string is numeric
+        int(second_to_last_key)
+        return StellarXDR_const.OperationResultCode.get(value)
+    except ValueError:
+        # Its an specific operation type result code
+        # second to last key will be the type (for example 'paymentResult')
+        # so we need to get 'PaymentResultCode' from stellar_xdr_const
+        enum_name = second_to_last_key[0].capitalize() + second_to_last_key[1:] + 'Code'
+        status_code_dict = getattr(StellarXDR_const, enum_name)
+        return status_code_dict.get(value)
 
 
 def calculate_hash(transaction, network_hash):

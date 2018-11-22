@@ -1,4 +1,4 @@
-"""Command line tool to parse Stellar's xdr history files."""
+"""Command line tool to parse Kin's xdr history files."""
 import json
 import re
 
