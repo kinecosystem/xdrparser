@@ -3,6 +3,7 @@
 import gzip
 from hashlib import sha256
 import base64
+from decimal import Decimal, getcontext
 
 from kin_base.stellarxdr import Xdr
 from kin_base.stellarxdr import StellarXDR_const
@@ -17,7 +18,8 @@ PACKED_ENVELOP_TYPE = b'\x00\x00\x00\x02'
 # An asset amount unit (that which is seen by end users) is scaled down by a factor of ten million (10,000,000)
 # to arrive at the native 64-bit integer representation.
 # https://www.stellar.org/developers/guides/concepts/assets.html#amount-precision-and-representation
-AMOUNT_SCALE_FACTOR = 1e7
+AMOUNT_SCALE_FACTOR = Decimal(1e7)
+getcontext().prec = 7
 
 
 def init_unpacker(data):
@@ -204,7 +206,9 @@ def parse_hint(value):
 
 def parse_amount(value):
     """Return a scaled down amount."""
-    return value / AMOUNT_SCALE_FACTOR
+    # value and AMOUNT_SCALE_FACTOR are always integers, so there is no need to case to string first
+    # cast back to float so it will be decodable to json
+    return float(Decimal(value) / Decimal(AMOUNT_SCALE_FACTOR))
 
 
 def parse_result_code(second_to_last_key, value):
