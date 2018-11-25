@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='xdrparser',
-    version='1.2.0',
+    version='1.2.1',
     author="Ron Serruya",
     author_email="ron.serruya@kik.com",
     description="Xdr parser for stellar history files",
