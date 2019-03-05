@@ -21,7 +21,7 @@ PACKED_ENVELOP_TYPE = b'\x00\x00\x00\x02'
 # to arrive at the native 64-bit integer representation.
 # https://www.stellar.org/developers/guides/concepts/assets.html#amount-precision-and-representation
 from kin_base.operation import ONE as AMOUNT_SCALE_FACTOR
-getcontext().prec = 7
+getcontext().prec = 5
 
 
 def init_unpacker(data: bytes) -> (Xdr.StellarXDRUnpacker, dict):
