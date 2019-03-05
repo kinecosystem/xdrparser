@@ -89,7 +89,7 @@ def unpack_file(file_name: str) -> List:
     return parsed_structs
 
 
-def parse(file_name: str, with_hash: bool = False, network_id: str = None) -> dict:
+def parse(file_name: str, raw_amount: bool = False, with_hash: bool = False, network_id: str = None) -> dict:
     """Unpack and parse a file."""
     unpacked = unpack_file(file_name)
 
@@ -101,28 +101,28 @@ def parse(file_name: str, with_hash: bool = False, network_id: str = None) -> di
                 transaction.hash = calculate_hash(transaction.tx, network_hash)
 
     # Create a json-compatible dictionary
-    unpacked = todict(unpacked)
+    unpacked = todict(unpacked, raw_amount=raw_amount)
 
     return unpacked
 
 
-def todict(obj: List, current_path: str = ''):
+def todict(obj: List, raw_amount: bool, current_path: str = ''):
     """
     Recursively walk over an object and convert it to a dictionary.
 
     In addition, to make it json-compatible, parse every final value.
     """
     if hasattr(obj, '__dict__'):
-        data = dict([(key, todict(value, current_path + '.' + key))
+        data = dict([(key, todict(value, raw_amount, current_path + '.' + key))
                      for key, value in obj.__dict__.items()])
         return data
     elif hasattr(obj, '__iter__') and not isinstance(obj, (str, bytes, bytearray)):
-        return [todict(value, current_path + '.' + str(key)) for key, value in enumerate(obj)]
+        return [todict(value, raw_amount, current_path + '.' + str(key)) for key, value in enumerate(obj)]
     else:
-        return parse_value(obj, current_path)
+        return parse_value(obj, current_path, raw_amount)
 
 
-def parse_value(value: Any, path: str):
+def parse_value(value: Any, path: str, raw_amount: bool):
     """Parse a value to make it human-readable and json-compatible."""
     split_path = path.split('.')
     final_key = split_path[-1]
@@ -130,7 +130,9 @@ def parse_value(value: Any, path: str):
     if isinstance(value, int):
         # Check if the value from this attribute should be parsed.
         if final_key == 'amount' or final_key == 'startingBalance':
-            return parse_amount(value)
+            if not raw_amount:
+                return parse_amount(value)
+            return value
         if final_key == 'code':
             return parse_result_code(second_to_last_key, value)
 

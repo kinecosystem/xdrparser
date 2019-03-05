@@ -24,12 +24,13 @@ class DecimalEncoder(json.JSONEncoder):
                                                 " must be used with --network-id")
 @click.option('--network-id', default=None, help="Network-id/network paraphrase, needed for --with-hash")
 @click.option('--indent', default=2, help='Number of spaces to indent the json output with')
-def main(xdr_file, with_hash, network_id, indent):
+@click.option('--raw-amount', is_flag=True, help='Should the amount be shown in stroops')
+def main(xdr_file, raw_amount, with_hash, network_id, indent):
     """Command line tool to parse Stellar's xdr history files."""
     verify_input(xdr_file, with_hash, network_id)
 
     # Parse and print the file
-    data = parser.parse(xdr_file, with_hash=with_hash, network_id=network_id)
+    data = parser.parse(xdr_file, raw_amount=raw_amount, with_hash=with_hash, network_id=network_id)
     print(json.dumps(data, indent=indent, cls=DecimalEncoder))
 
 
