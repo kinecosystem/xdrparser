@@ -4,9 +4,11 @@ import gzip
 from hashlib import sha256
 import base64
 from decimal import Decimal, getcontext
+from typing import List, Any
 
 from kin_base.stellarxdr import Xdr
 from kin_base.stellarxdr import StellarXDR_const
+from kin_base.stellarxdr.StellarXDR_type import Transaction
 from kin_base import utils
 
 
@@ -18,11 +20,11 @@ PACKED_ENVELOP_TYPE = b'\x00\x00\x00\x02'
 # An asset amount unit (that which is seen by end users) is scaled down by a factor of ten million (10,000,000)
 # to arrive at the native 64-bit integer representation.
 # https://www.stellar.org/developers/guides/concepts/assets.html#amount-precision-and-representation
-AMOUNT_SCALE_FACTOR = Decimal(1e7)
+from kin_base.operation import ONE as AMOUNT_SCALE_FACTOR
 getcontext().prec = 7
 
 
-def init_unpacker(data):
+def init_unpacker(data: bytes) -> (Xdr.StellarXDRUnpacker, dict):
     """
     Initialize the stellar xdr unpacker.
 
@@ -42,7 +44,7 @@ def init_unpacker(data):
     return unpacker, unpacker_methods
 
 
-def unpack_file(file_name):
+def unpack_file(file_name: str) -> List:
     """Unpack an xdr file."""
     # xdr files are always gzipped in the archive, unzip it if the user didn't do it yet
     if file_name.endswith('.gz'):
@@ -87,7 +89,7 @@ def unpack_file(file_name):
     return parsed_structs
 
 
-def parse(file_name, with_hash=False, network_id=None):
+def parse(file_name: str, with_hash: bool = False, network_id: str = None) -> dict:
     """Unpack and parse a file."""
     unpacked = unpack_file(file_name)
 
@@ -104,7 +106,7 @@ def parse(file_name, with_hash=False, network_id=None):
     return unpacked
 
 
-def todict(obj, current_path=''):
+def todict(obj: List, current_path: str = ''):
     """
     Recursively walk over an object and convert it to a dictionary.
 
@@ -120,7 +122,7 @@ def todict(obj, current_path=''):
         return parse_value(obj, current_path)
 
 
-def parse_value(value, path):
+def parse_value(value: Any, path: str):
     """Parse a value to make it human-readable and json-compatible."""
     split_path = path.split('.')
     final_key = split_path[-1]
@@ -153,17 +155,17 @@ def parse_value(value, path):
     return value
 
 
-def parse_account(value):
+def parse_account(value: bytes) -> str:
     """Return the address from the address bytes."""
     return utils.encode_check('account', value).decode()
 
 
-def parse_text(value):
+def parse_text(value: bytes) -> str:
     """Decode a byte string."""
     return value.decode()
 
 
-def parse_asset_code(value):
+def parse_asset_code(value: bytes) -> str:
     r"""
     Decode a byte string an remove any extra bytes.
 
@@ -172,12 +174,12 @@ def parse_asset_code(value):
     return value.decode().replace('\x00', '')
 
 
-def parse_hash(value):
+def parse_hash(value: bytes) -> str:
     """Return an hex representation of the hash."""
     return value.hex()
 
 
-def pares_signature(value):
+def pares_signature(value: bytes) -> str:
     """
     Return a base64 encoded signature.
 
@@ -187,7 +189,7 @@ def pares_signature(value):
     return base64.b64encode(value).decode()
 
 
-def parse_hint(value):
+def parse_hint(value: bytes) -> str:
     """
     Return a hint for a signature.
 
@@ -204,11 +206,9 @@ def parse_hint(value):
     return partial_address
 
 
-def parse_amount(value):
+def parse_amount(value: int) -> Decimal:
     """Return a scaled down amount."""
-    # value and AMOUNT_SCALE_FACTOR are always integers, so there is no need to case to string first
-    # cast back to float so it will be decodable to json
-    return float(Decimal(value) / Decimal(AMOUNT_SCALE_FACTOR))
+    return Decimal(value) / Decimal(AMOUNT_SCALE_FACTOR)
 
 
 def parse_result_code(second_to_last_key, value):
@@ -231,7 +231,7 @@ def parse_result_code(second_to_last_key, value):
         return status_code_dict.get(value)
 
 
-def calculate_hash(transaction, network_hash):
+def calculate_hash(transaction: Transaction, network_hash: bytes) -> bytes:
     """
     Return the hash for a transaction.
 
