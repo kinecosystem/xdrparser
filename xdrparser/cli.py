@@ -1,10 +1,21 @@
 """Command line tool to parse Kin's xdr history files."""
 import json
 import re
+from decimal import Decimal
 
 import click
 
 from xdrparser import parser
+
+
+class DecimalEncoder(json.JSONEncoder):
+    """
+    Json encoder that encodes Decimals as strings
+    """
+    def default(self, o):
+        if isinstance(o, Decimal):
+            return str(o)
+        return super(DecimalEncoder, self).default(o)
 
 
 @click.command()
@@ -19,7 +30,7 @@ def main(xdr_file, with_hash, network_id, indent):
 
     # Parse and print the file
     data = parser.parse(xdr_file, with_hash=with_hash, network_id=network_id)
-    print(json.dumps(data, indent=indent))
+    print(json.dumps(data, indent=indent, cls=DecimalEncoder))
 
 
 def verify_input(xdr_file, with_hash, network_id):

@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setup(
     name='xdrparser',
-    version='1.2.1',
+    version='1.3.0',
     author="Ron Serruya",
     author_email="ron.serruya@kik.com",
-    description="Xdr parser for stellar history files",
+    description="Xdr parser for Kin's history files",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/kinecosystem/xdrparser",
@@ -21,7 +21,7 @@ setup(
     ),
     install_requires=[
         'Click==6.7',
-        'kin-base==1.0.2'
+        'kin-base==1.0.7'
     ],
     entry_points='''
         [console_scripts]
