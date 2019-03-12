@@ -106,7 +106,7 @@ def parse(file_name: str, raw_amount: bool = False, with_hash: bool = False, net
     return unpacked
 
 
-def todict(obj: List, raw_amount: bool, current_path: str = ''):
+def todict(obj: Any, raw_amount: bool, current_path: str = ''):
     """
     Recursively walk over an object and convert it to a dictionary.
 
@@ -122,7 +122,7 @@ def todict(obj: List, raw_amount: bool, current_path: str = ''):
         return parse_value(obj, current_path, raw_amount)
 
 
-def parse_value(value: Any, path: str, raw_amount: bool):
+def parse_value(value: Any, path: str, raw_amount: bool = False):
     """Parse a value to make it human-readable and json-compatible."""
     split_path = path.split('.')
     final_key = split_path[-1]
@@ -145,7 +145,7 @@ def parse_value(value: Any, path: str, raw_amount: bool):
         elif 'hash' in str(final_key).lower() or second_to_last_key == 'skipList':
             return parse_hash(value)
         elif final_key == 'signature':
-            return pares_signature(value)
+            return parse_signature(value)
         elif final_key == 'hint':
             return parse_hint(value)
         elif final_key == 'text':
@@ -181,7 +181,7 @@ def parse_hash(value: bytes) -> str:
     return value.hex()
 
 
-def pares_signature(value: bytes) -> str:
+def parse_signature(value: bytes) -> str:
     """
     Return a base64 encoded signature.
 
