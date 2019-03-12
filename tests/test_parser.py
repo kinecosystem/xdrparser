@@ -1,5 +1,6 @@
 import pytest
-from decimal import Decimal\
+import pickle
+from decimal import Decimal
 
 FILE_LOCATION = './transactions-0043733f.xdr.gz'
 
@@ -24,15 +25,26 @@ def test_unpack_file():
     unpacked = unpack_file(FILE_LOCATION)
     assert len(unpacked) == 64
 
+"""
+The following is a code for creating the files for the next 2 tests
+
+# with open('./parsed_with_hash.output', 'wb') as file:
+#     a = parse(FILE_LOCATION, with_hash=True, network_id='test')
+#     file.write(pickle.dumps(a))
+"""
+
 
 def test_parse():
     from xdrparser.parser import parse
-    parse(FILE_LOCATION)
+    with open('./parsed_no_hash.output', 'rb') as f:
+        assert pickle.dumps(parse(FILE_LOCATION)) == f.read()
 
 
 def test_parse_with_hash():
     from xdrparser.parser import parse
-    parse(FILE_LOCATION, with_hash=True, network_id='test')
+
+    with open('./parsed_with_hash.output', 'rb') as f:
+        assert pickle.dumps(parse(FILE_LOCATION, with_hash=True, network_id='test')) == f.read()
 
 
 def test_todict():
@@ -116,7 +128,6 @@ def test_parse_account():
     from xdrparser.parser import parse_account
     assert parse_account(b'\x0e\xb4\xc8\x9e$1\r\xdc\x9e\xa0(kH?\xfar\xd5}A\xa7$\x84"\xdcn4`j\xbdc\t^') == \
            'GAHLJSE6EQYQ3XE6UAUGWSB77JZNK7KBU4SIIIW4NY2GA2V5MMEV4LRB'
-    return 0
 
 
 def test_parse_text():
