@@ -2,7 +2,7 @@ import pytest
 import pickle
 from decimal import Decimal
 
-FILE_LOCATION = './transactions-0043733f.xdr.gz'
+FILE_LOCATION = 'tests/transactions-0043733f.xdr.gz'
 
 
 @pytest.fixture('session')
@@ -28,7 +28,7 @@ def test_unpack_file():
 """
 The following is a code for creating the files for the next 2 tests
 
-# with open('./parsed_with_hash.output', 'wb') as file:
+# with open('tests/parsed_with_hash.output', 'wb') as file:
 #     a = parse(FILE_LOCATION, with_hash=True, network_id='test')
 #     file.write(pickle.dumps(a))
 """
@@ -36,14 +36,14 @@ The following is a code for creating the files for the next 2 tests
 
 def test_parse():
     from xdrparser.parser import parse
-    with open('./parsed_no_hash.output', 'rb') as f:
+    with open('tests/parsed_no_hash.output', 'rb') as f:
         assert pickle.dumps(parse(FILE_LOCATION)) == f.read()
 
 
 def test_parse_with_hash():
     from xdrparser.parser import parse
 
-    with open('./parsed_with_hash.output', 'rb') as f:
+    with open('tests/parsed_with_hash.output', 'rb') as f:
         assert pickle.dumps(parse(FILE_LOCATION, with_hash=True, network_id='test')) == f.read()
 
 
