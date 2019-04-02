@@ -1,0 +1,10 @@
+language: python
+python:
+  - "3.6"
+# command to install dependencies
+install:
+  - pip install kin-base==1.0.7
+  - pip install pytest
+# command to run tests
+script:
+  - pytest

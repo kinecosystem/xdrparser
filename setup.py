@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='xdrparser',
-    version='1.3.1',
+    version='1.3.2',
     author="Ron Serruya",
     author_email="ron.serruya@kik.com",
     description="Xdr parser for Kin's history files",
